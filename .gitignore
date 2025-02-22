@@ -1,6 +1,10 @@
 # Local .terraform directories
 **/.terraform/*
 
+# Local web files
+*/static-web-eg/*
+*/website_content/*
+
 # .tfstate files
 *.tfstate
 *.tfstate.*
