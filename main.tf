@@ -1,7 +1,7 @@
 locals {
   s3_domain_name = "${var.local_prefix}.sctp-sandbox.com"
 }
-
+#part 1 private s3 bucket
 resource "aws_s3_bucket" "s3_bucket" {
   bucket = local.s3_domain_name
   force_destroy = true
@@ -75,7 +75,7 @@ resource "aws_vpc_endpoint" "s3_vpce" {
 
   route_table_ids = [aws_route_table.my_private_route_table_az1.id]
 }
-
+#Part 2: CloudFront
 # Attach a bucket policy allowing access via VPC Endpoint and Cloudfront interaction
 resource "aws_s3_bucket_policy" "s3_policy" {
   bucket = aws_s3_bucket.s3_bucket.id
@@ -106,7 +106,7 @@ resource "aws_s3_bucket_policy" "s3_policy" {
   })
 }
 
-# IAM Role for accessing S3
+#Part3: IAM+Security Groups Role for accessing S3
 resource "aws_iam_role" "s3_access_role" {
   name = "${var.local_prefix}-s3-role"
 
@@ -182,7 +182,7 @@ resource "aws_security_group" "vpc_security" {
   }
 }
 
-
+#Part 4: Create ACM 
 resource "aws_acm_certificate" "cert" {
   domain_name       = local.s3_domain_name
   validation_method = "DNS"
@@ -240,7 +240,7 @@ resource "aws_cloudfront_distribution" "cloudfront" {
   }
 
 }
-
+#Part 5: WAF
 resource "aws_wafv2_web_acl" "waf_acl" {
   name        = "${var.local_prefix}-waf"
   scope       = "CLOUDFRONT"
